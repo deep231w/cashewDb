@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net"
+
+	commandparser "github.com/deep231w/cashiedb/commandParser"
 )
 
 func handleconn(conn net.Conn) {
@@ -19,13 +21,18 @@ func handleconn(conn net.Conn) {
 	}
 
 	fmt.Println("message is :=", mesage)
-	
-	response := fmt.Sprintln("ACK: yo i got yo message!")
+	parsedArg,err := commandparser.CommandParser(mesage)
+	if err !=  nil{
+		// conn.Write([]byte(err.Error()+"\n"))
+		fmt.Fprintf(conn, "Error: %v\n", err.Error())
+		return
+	}
+	response := fmt.Sprintf("ACK: yo i got yo message!,  here is your cmd = %v", parsedArg)
 	_, err = conn.Write([]byte(response))
 	if err != nil {
 		log.Println("Error during write !!")
 	}
-
+	
 }
 func main() {
 	listner, err := net.Listen("tcp", ":8000")
