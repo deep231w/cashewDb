@@ -14,11 +14,11 @@ func ExecCommand(args *dto.Command) (*string, error){
 			return &res, nil
 
 		case "GET" :
-			res:=Get(&args.Args[1])
-			if res == nil{
+			res, err:=Get(&args.Args[0])
+			if err != nil{
 				return nil, errors.New("Not Found !")
 			}
-
+			return &res, nil
 		case "DEL" :
 			Del()
 		default :

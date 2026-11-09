@@ -1,12 +1,19 @@
 package cmdexec
 
-import "github.com/deep231w/cashiedb/db"
+import (
+	"errors"
+	"fmt"
 
-func Get(key *string) *string{
+	"github.com/deep231w/cashiedb/db"
+)
+
+func Get(key *string) (string, error){
 	res,ok:= db.Store[*key]
+	fmt.Println("all db : ", db.Store)
+	fmt.Println("key , found: ", *key,res)
 	if !ok {
-		return nil
+		return "", errors.New("Not found")
 	}
-	
-	return &res
+
+	return res, nil
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 
 	cmdexec "github.com/deep231w/cashiedb/cmdExec"
 	commandparser "github.com/deep231w/cashiedb/commandParser"
@@ -13,7 +14,7 @@ import (
 func handleconn(conn net.Conn) {
 	defer conn.Close()
 
-	fmt.Println("connection recieved:", conn)
+	fmt.Println("connection recieved:", &conn)
 
 	reader := bufio.NewReader(conn)
 	mesage, err := reader.ReadString('\n')
@@ -21,20 +22,23 @@ func handleconn(conn net.Conn) {
 		log.Printf("Error: %v", err)
 	}
 
-	fmt.Println("message is :=", mesage)
-	parsedArg,err := commandparser.CommandParser(&mesage)
+	cmdProtocol:= strings.TrimSpace(mesage)
+	fmt.Println("message is :=", cmdProtocol)
+
+	parsedArg,err := commandparser.CommandParser(&cmdProtocol)
 	if err !=  nil{
 		// conn.Write([]byte(err.Error()+"\n"))
 		fmt.Fprintf(conn, "Error: %v\n", err.Error())
 		return
 	}
+
 	res, err:=cmdexec.ExecCommand(parsedArg)
 	if err != nil{
-		fmt.Fprintf(conn, "Error: %v/", err.Error())
+		fmt.Fprintf(conn, "Error: %v\n", err.Error())
 		return
 	}
-
-	response := fmt.Sprintf("ACK: yo i got yo message!,  here is your cmd = %v", res)
+	fmt.Println("result:", *res)
+	response := fmt.Sprintf("ACK: yo i got yo message!,  here is your result: %v\n", *res)
 
 	_, err = conn.Write([]byte(response))
 	if err != nil {
