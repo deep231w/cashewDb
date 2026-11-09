@@ -12,7 +12,6 @@ func ExecCommand(args *dto.Command) (*string, error){
 		case "SET" :
 			res:=Set(&args.Args[0], &args.Args[1])
 			return &res, nil
-
 		case "GET" :
 			res, err:=Get(&args.Args[0])
 			if err != nil{
@@ -20,10 +19,12 @@ func ExecCommand(args *dto.Command) (*string, error){
 			}
 			return &res, nil
 		case "DEL" :
-			Del()
+			res, err:=Del(&args.Args[0])
+			if err != nil{
+				return nil, err
+			}
+			return &res, nil
 		default :
 			return nil, errors.New("Commad not matched !")
 	}
-
-	return nil, nil
 }
