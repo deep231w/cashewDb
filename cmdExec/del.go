@@ -1,1 +1,5 @@
 package cmdexec
+
+func Del(){
+	
+}

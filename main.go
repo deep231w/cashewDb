@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 
+	cmdexec "github.com/deep231w/cashiedb/cmdExec"
 	commandparser "github.com/deep231w/cashiedb/commandParser"
 )
 
@@ -21,18 +22,25 @@ func handleconn(conn net.Conn) {
 	}
 
 	fmt.Println("message is :=", mesage)
-	parsedArg,err := commandparser.CommandParser(mesage)
+	parsedArg,err := commandparser.CommandParser(&mesage)
 	if err !=  nil{
 		// conn.Write([]byte(err.Error()+"\n"))
 		fmt.Fprintf(conn, "Error: %v\n", err.Error())
 		return
 	}
-	response := fmt.Sprintf("ACK: yo i got yo message!,  here is your cmd = %v", parsedArg)
+	res, err:=cmdexec.ExecCommand(parsedArg)
+	if err != nil{
+		fmt.Fprintf(conn, "Error: %v/", err.Error())
+		return
+	}
+
+	response := fmt.Sprintf("ACK: yo i got yo message!,  here is your cmd = %v", res)
+
 	_, err = conn.Write([]byte(response))
 	if err != nil {
 		log.Println("Error during write !!")
 	}
-	
+
 }
 func main() {
 	listner, err := net.Listen("tcp", ":8000")
