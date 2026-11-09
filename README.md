@@ -16,7 +16,7 @@ CashieDB is a small database server that stores key-value pairs in memory and al
 ### Run the server
 
 ```bash
-go run .
+go run ./main.go
 ```
 
 ## How It Works
