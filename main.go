@@ -8,8 +8,8 @@ import (
 	"net"
 	"strings"
 
-	cmdexec "github.com/deep231w/cashiedb/cmdExec"
-	commandparser "github.com/deep231w/cashiedb/commandParser"
+	cmdexec "github.com/deep231w/cashiedb/core/cmdExec"
+	commandparser "github.com/deep231w/cashiedb/core/commandParser"
 )
 
 func handleconn(conn net.Conn ) {
@@ -17,16 +17,18 @@ func handleconn(conn net.Conn ) {
 	
 	log.Println("connection recieved:", &conn)
 	reader := bufio.NewReader(conn)
+	// m,_:=reader.ReadString('\n')
+	// fmt.Println("message recieved",m)
 	for{
 		mesage, err := reader.ReadString('\n')
 		if err != nil {
-			log.Printf("Error: %v", err)
+			log.Printf("Error in nil : %v", err)
 			if err ==io.EOF{
-
-				return 
+				log.Println("client disconnected !!")
+			}else{
+				log.Println("Error during read : ", err)
 			}
-			log.Println("Error during read : ", err)
-			return 
+			// return 
 		}
 
 		cmdProtocol:= strings.TrimSpace(mesage)
