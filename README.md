@@ -1,19 +1,17 @@
 # CashieDB
 
-A lightweight, in-memory key-value database written in Go.
+A lightweight, in-memory key-value database written in Go for TCP-based client-server access.
 
-CashieDB is a small database server that stores key-value pairs in memory and allows clients to interact with it over TCP.
+![CashieDB demo](docs/assets/cashew.avif)
 
 ## Features
 
 - In-memory key-value storage
 - TCP-based client-server communication
 - Concurrent client connection handling
-- Lightweight and written entirely in Go
+- Small, focused Go implementation for key-value operations
 
 ## Getting Started
-
-### Run the server
 
 ```bash
 go run ./main.go
@@ -21,16 +19,16 @@ go run ./main.go
 
 ## How It Works
 
-CashieDB runs as a TCP server. Clients connect to the server and send requests to perform operations on the in-memory key-value store.
+CashieDB runs as a TCP server. Clients connect to the server, send commands, and receive responses over the network. Each client connection is handled independently, enabling multiple clients to interact with the database concurrently.
 
 Data is stored in memory and is lost when the server shuts down.
 
 ## Tech Stack
 
-- **Language:** Go
-- **Networking:** TCP
-- **Storage:** In-memory key-value store
+- Go
+- TCP networking
+- In-memory storage
 
 ## Project Status
 
-Work in progress 🚧
+Work in progress.
