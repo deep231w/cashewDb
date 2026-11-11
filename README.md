@@ -2,7 +2,10 @@
 
 A lightweight, in-memory key-value database written in Go for TCP-based client-server access.
 
-![CashieDB demo](docs/assets/cashew.avif)
+<picture>
+  <source srcset="docs/assets/cashew.avif" type="image/avif" />
+  <img src="docs/assets/cashew.avif" alt="CashieDB demo" width="60%" style="display:block; margin:0 auto; background-color:#000; border-radius:8px;" />
+</picture>
 
 ## Features
 
