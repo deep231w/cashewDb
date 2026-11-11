@@ -10,6 +10,7 @@ import (
 
 	cmdexec "github.com/deep231w/cashiedb/core/cmdExec"
 	commandparser "github.com/deep231w/cashiedb/core/commandParser"
+	"github.com/deep231w/cashiedb/core/resp"
 )
 
 func handleconn(conn net.Conn ) {
@@ -19,16 +20,16 @@ func handleconn(conn net.Conn ) {
 	reader := bufio.NewReader(conn)
 	// m,_:=reader.ReadString('\n')
 	// fmt.Println("message recieved",m)
-	for{
+	for {
 		mesage, err := reader.ReadString('\n')
+		fmt.Println("message before parsing : ", mesage)
 		if err != nil {
-			log.Printf("Error in nil : %v", err)
 			if err ==io.EOF{
 				log.Println("client disconnected !!")
 			}else{
 				log.Println("Error during read : ", err)
 			}
-			// return 
+			return 
 		}
 
 		cmdProtocol:= strings.TrimSpace(mesage)
@@ -78,6 +79,39 @@ func main() {
 		if err != nil {
 			log.Println("Error accepting connection:", err)
 		}
-		go handleconn(conn)
+		// go handleconn(conn)
+		go testHandler(conn)
 	}
+}
+
+
+//test redis cli 
+
+func testHandler(conn net.Conn){
+	defer conn.Close()
+
+	reader := bufio.NewReader(conn)
+	buff:= make([]byte, 1024)
+	for{
+		// message, err:= reader.ReadString('\n')
+		n, err:=reader.Read(buff)
+
+		// fmt.Println("message is ", message)
+		
+		if err!= nil{
+			if err == io.EOF{
+				return
+			}
+			fmt.Println("Read error")
+		}
+
+		serialisedData:= buff[:n]
+		resp.DeserializeData(serialisedData)
+		
+		fmt.Println("data recieved is = ", string(serialisedData))
+
+
+		fmt.Fprintf(conn,"$%d\r\n%s\r\n", len(serialisedData),serialisedData)
+	}
+	
 }
