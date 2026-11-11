@@ -1,4 +1,4 @@
-# CashieDB
+# CashewDB
 
 A lightweight, in-memory key-value database written in Go for TCP-based client-server access.
 
