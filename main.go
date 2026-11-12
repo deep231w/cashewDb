@@ -106,10 +106,14 @@ func testHandler(conn net.Conn){
 		}
 
 		serialisedData:= buff[:n]
-		resp.DeserializeData(serialisedData)
+		fmt.Printf("recieved serdata: %q\n", serialisedData)
+		// resp.RespDeserializer(serialisedData)
+		rd:= resp.RespDeserializer{}
+		rd.DeserializeData(serialisedData)
 		
 		fmt.Println("data recieved is = ", string(serialisedData))
 
+		fmt.Printf("data recieved is = %q\n", serialisedData)
 
 		fmt.Fprintf(conn,"$%d\r\n%s\r\n", len(serialisedData),serialisedData)
 	}
