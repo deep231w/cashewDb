@@ -57,8 +57,8 @@ func (rd RespDeserializer) Integers(data []byte, start int)(*RespDataType, int ,
 
 //$<length>\r\n<element>\r\n
 func (rd RespDeserializer) BulkString(data []byte, start int) (*RespDataType,int, error){
-	fmt.Println("inside string deser-----------------")
-	fmt.Printf("data in bulk string : %q\n", data)
+	// fmt.Println("inside string deser-----------------")
+	// fmt.Printf("data in bulk string : %q\n", data)
 	if data[0] != BULKSTRINGS {
 		fmt.Println("Error 1 in string type check $ missing!!")
 	}
@@ -71,19 +71,19 @@ func (rd RespDeserializer) BulkString(data []byte, start int) (*RespDataType,int
 		log.Println("error during convert ,  in bulkstring !!")
 	}
 	pos:= crlfIdx+2
-	fmt.Printf("length of str in bulkstrng: %d and pos is : %d & newlineidx is : %d\n", lengthOfelement, pos, crlfIdx)
+	// fmt.Printf("length of str in bulkstrng: %d and pos is : %d & newlineidx is : %d\n", lengthOfelement, pos, crlfIdx)
 	tempData:= data[pos:pos+lengthOfelement]
 
-	fmt.Printf("temp data in bulkstring : %q\n", tempData)
+	// fmt.Printf("temp data in bulkstring : %q\n", tempData)
 
-	return nil, -1,nil
+	return &RespDataType{Value: tempData, Type: BULKSTRINGS}, lengthOfelement+pos+2,nil
 }
 
 //*<length-of-array(int)>\r\nelement1...elementN\r\n
 func (rd RespDeserializer) Arrays(data []byte, start int)(*RespDataType, int, error){
-	fmt.Println("inside array deser----------------")
+	// fmt.Println("inside array deser----------------")
 	crlfIdx:= bytes.Index(data, []byte("\r\n"))
-	fmt.Println("crlfidx: ", crlfIdx)
+	// fmt.Println("crlfidx: ", crlfIdx)
 	if crlfIdx == -1{
 		fmt.Println("MIssing in clrf \\r\\n ")
 	}
@@ -91,9 +91,9 @@ func (rd RespDeserializer) Arrays(data []byte, start int)(*RespDataType, int, er
 	if err!= nil {
 		log.Println("Error during convert : ", err)
 	}
-	fmt.Printf("len of arr : %d\n", lengthOfarr)
+	// fmt.Printf("len of arr : %d\n", lengthOfarr)
 
-	result:= make([]string,0, lengthOfarr)
+	result:= make([]*RespDataType, lengthOfarr)
 	
 	deserialesedFuncs := map[byte]func([]byte, int)(*RespDataType, int, error){
 		SIMPLESTRING:	rd.SimpleString,
@@ -108,25 +108,31 @@ func (rd RespDeserializer) Arrays(data []byte, start int)(*RespDataType, int, er
 	for arrIdx < lengthOfarr {
 		deserialiseFunc, ok:= deserialesedFuncs[data[pos]]
 		if !ok{
+			// fmt.Println("Error: not found data type")
 			return nil, -1, fmt.Errorf("Not found data type %c \n", data[pos])
 		}
 
-		fmt.Printf("old data : = %q , and pos is : %d\n", data, pos )
+		// fmt.Printf("old data : = %q , and pos is : %d\n", data, pos )
 		newData:= data[pos:]
-		fmt.Printf("new data extrcted: = %q\n", newData)
+		// fmt.Printf("new data extrcted: = %q\n", newData)
 
 		res, next, err:=deserialiseFunc(newData, pos)
 		if err != nil {
+			// fmt.Println("Error: err in calling deserialise func ")
 			return nil, -1, err
 		}
-		fmt.Println("res is : ", res)
-
+		// fmt.Printf("res is : %+v, %q\n", res, res.Value.([]byte))
+		result[arrIdx]=res
 		pos+=next
-		fmt.Println("after it pos is : ---", pos)
+		// fmt.Println("after it pos is : ---", pos)
 		arrIdx++
 	}
 
-	fmt.Println("final result: ", result)
-	fmt.Println("data in array deserializer :=" ,string(data))
-	return nil, -1, nil
+	// fmt.Printf("final result: %q\n", result)
+	for i, item := range result {
+	    fmt.Printf("[%d] Type: %c | Value: %q | Go Type: %T\n",
+    	    i, item.Type, item.Value, item.Value)
+	}	
+	// fmt.Println("data in array deserializer :=" ,string(data))
+	return &RespDataType{Value: result, Type: ARRAYS}, -1, nil
 }
