@@ -27,6 +27,11 @@ DATA TYPES STARTS WITH:-
 */
 
 type RespDeserializer struct{}
+
+func NewRespDeserializer() RespDeserializer {
+	return RespDeserializer{}
+}
+
 func (rd RespDeserializer) DeserializeData(data []byte) ( *RespDataType,error) {
 	var result *RespDataType 
 	var err error
@@ -47,7 +52,7 @@ func (rd RespDeserializer) SimpleString(data []byte, start int)(*RespDataType,in
 	return nil, -1, nil
 }
 
-func (rd RespDeserializer) Errors(data []byte, start int)(*RespDataType,int, error){
+func (rd RespDeserializer) SimpleErrors(data []byte, start int)(*RespDataType,int, error){
 	return nil, -1, nil
 }
 
@@ -76,7 +81,7 @@ func (rd RespDeserializer) BulkString(data []byte, start int) (*RespDataType,int
 
 	// fmt.Printf("temp data in bulkstring : %q\n", tempData)
 
-	return &RespDataType{Value: tempData, Type: BULKSTRINGS}, lengthOfelement+pos+2,nil
+	return &RespDataType{Value: string(tempData), Type: BULKSTRINGS}, lengthOfelement+pos+2,nil
 }
 
 //*<length-of-array(int)>\r\nelement1...elementN\r\n
@@ -97,7 +102,7 @@ func (rd RespDeserializer) Arrays(data []byte, start int)(*RespDataType, int, er
 	
 	deserialesedFuncs := map[byte]func([]byte, int)(*RespDataType, int, error){
 		SIMPLESTRING:	rd.SimpleString,
-		ERRORS   	: 	rd.Errors,
+		ERRORS   	: 	rd.SimpleErrors,
 		INTEGERS    : 	rd.BulkString,
 		BULKSTRINGS :	rd.BulkString,
 		ARRAYS      :	rd.Arrays,

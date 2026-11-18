@@ -6,7 +6,7 @@ import (
 	"github.com/deep231w/cashiedb/db"
 )
 
-func Set(key *string, val *string) string{
+func Set(key *string, val *string) any{
 	db.Store[*key]=*val
 	fmt.Printf("updated db : %v",db.Store)
 

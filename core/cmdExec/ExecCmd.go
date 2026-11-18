@@ -7,7 +7,7 @@ import (
 	"github.com/deep231w/cashiedb/dto"
 )
 
-func ExecCommand(args *dto.Command) (*string, error){
+func ExecCommand(args *dto.Command) (*any, error){
 	switch strings.ToUpper(args.Name) {
 		case "SET" :
 			res:=Set(&args.Args[0], &args.Args[1])

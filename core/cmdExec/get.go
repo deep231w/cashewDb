@@ -7,7 +7,7 @@ import (
 	"github.com/deep231w/cashiedb/db"
 )
 
-func Get(key *string) (string, error){
+func Get(key *string) (any, error){
 	res,ok:= db.Store[*key]
 	fmt.Println("all db : ", db.Store)
 	fmt.Println("key , found: ", *key,res)

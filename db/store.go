@@ -1,7 +1,3 @@
 package db
 
-var Store = make(map[string]string)
-
-func main(){
-	
-}
+var Store = make(map[string]any)
