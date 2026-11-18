@@ -13,9 +13,9 @@ import (
 	"github.com/deep231w/cashiedb/core/resp"
 )
 
-func handleconn(conn net.Conn ) {
+func handleconn(conn net.Conn) {
 	defer conn.Close()
-	
+
 	log.Println("connection recieved:", &conn)
 	reader := bufio.NewReader(conn)
 	// m,_:=reader.ReadString('\n')
@@ -24,26 +24,26 @@ func handleconn(conn net.Conn ) {
 		mesage, err := reader.ReadString('\n')
 		fmt.Println("message before parsing : ", mesage)
 		if err != nil {
-			if err ==io.EOF{
+			if err == io.EOF {
 				log.Println("client disconnected !!")
-			}else{
+			} else {
 				log.Println("Error during read : ", err)
 			}
-			return 
+			return
 		}
 
-		cmdProtocol:= strings.TrimSpace(mesage)
+		cmdProtocol := strings.TrimSpace(mesage)
 		fmt.Println("message is :=", cmdProtocol)
 
-		parsedArg,err := commandparser.CommandParser(&cmdProtocol)
-		if err !=  nil{
+		parsedArg, err := commandparser.CommandParser(&cmdProtocol)
+		if err != nil {
 			// conn.Write([]byte(err.Error()+"\n"))
 			fmt.Fprintf(conn, "Error during parsing cmd : %v\n", err.Error())
 			continue
 		}
 
-		res, err:=cmdexec.ExecCommand(parsedArg)
-		if err != nil{
+		res, err := cmdexec.ExecCommand(parsedArg)
+		if err != nil {
 			fmt.Fprintf(conn, "Error during cmd : %v\n", err.Error())
 			continue
 		}
@@ -56,10 +56,8 @@ func handleconn(conn net.Conn ) {
 			continue
 		}
 	}
-	
 
 }
-
 
 func main() {
 	listner, err := net.Listen("tcp", ":8000")
@@ -68,13 +66,13 @@ func main() {
 		log.Println("Error accepting connection", err)
 	}
 
-	connClients:= int64(0)
+	connClients := int64(0)
 
 	defer listner.Close()
 	fmt.Println("TCP server runnign on port : 8000")
 	for {
 		conn, err := listner.Accept()
-		connClients+=1
+		connClients += 1
 		log.Println("Total connections : ", connClients)
 		if err != nil {
 			log.Println("Error accepting connection:", err)
@@ -84,38 +82,37 @@ func main() {
 	}
 }
 
+//test redis cli
 
-//test redis cli 
-
-func testHandler(conn net.Conn){
+func testHandler(conn net.Conn) {
 	defer conn.Close()
 
 	reader := bufio.NewReader(conn)
-	buff:= make([]byte, 1024)
-	for{
+	buff := make([]byte, 1024)
+	for {
 		// message, err:= reader.ReadString('\n')
-		n, err:=reader.Read(buff)
+		n, err := reader.Read(buff)
 
 		// fmt.Println("message is ", message)
-		
-		if err!= nil{
-			if err == io.EOF{
+
+		if err != nil {
+			if err == io.EOF {
 				return
 			}
 			fmt.Println("Read error")
 		}
 
-		serialisedData:= buff[:n]
+		serialisedData := buff[:n]
 		fmt.Printf("recieved serdata: %q\n", serialisedData)
 		// resp.RespDeserializer(serialisedData)
-		rd:= resp.RespDeserializer{}
+		rd := resp.RespDeserializer{}
 		rd.DeserializeData(serialisedData)
-		
+
 		fmt.Println("data recieved is = ", string(serialisedData))
 
 		fmt.Printf("data recieved is = %q\n", serialisedData)
 
-		fmt.Fprintf(conn,"$%d\r\n%s\r\n", len(serialisedData),serialisedData)
+		fmt.Fprintf(conn, "$%d\r\n%s\r\n", len(serialisedData), serialisedData)
 	}
-	
+
 }

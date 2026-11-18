@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-func TestDeserializer(t *testing.T){
-	inputs:= []struct{
+func TestDeserializer(t *testing.T) {
+	inputs := []struct {
 		Data string
 		Type byte
 	}{
@@ -15,7 +15,7 @@ func TestDeserializer(t *testing.T){
 		{Data: "*2\r\n$3\r\nget\r\n$3\r\nkey\r\n", Type: ARRAYS},
 	}
 
-	expectedResult:= []struct{
+	expectedResult := []struct {
 		Data interface{}
 		Type byte
 	}{
@@ -23,7 +23,7 @@ func TestDeserializer(t *testing.T){
 		{Data: []*RespDataType{{Value: "echo", Type: BULKSTRINGS}, {Value: "hello world", Type: BULKSTRINGS}}, Type: ARRAYS},
 		{Data: []*RespDataType{{Value: "get", Type: BULKSTRINGS}, {Value: "key", Type: BULKSTRINGS}}, Type: ARRAYS},
 	}
-	testDeserializer:= NewRespDeserializer()
+	testDeserializer := NewRespDeserializer()
 
 	deserializeFuncs := map[byte]func([]byte, int) (*RespDataType, int, error){
 		SIMPLESTRING: testDeserializer.SimpleString,
@@ -33,24 +33,24 @@ func TestDeserializer(t *testing.T){
 		ARRAYS:       testDeserializer.Arrays,
 	}
 
-	for i,v:= range inputs {
+	for i, v := range inputs {
 		t.Log(i)
 
 		var res *RespDataType
 		var err error
-		switch v.Type{
+		switch v.Type {
 		case SIMPLESTRING:
-			res,_,err=deserializeFuncs[SIMPLESTRING]([]byte(v.Data),0)
+			res, _, err = deserializeFuncs[SIMPLESTRING]([]byte(v.Data), 0)
 		case BULKSTRINGS:
-			res, _, err= deserializeFuncs[BULKSTRINGS]([]byte(v.Data),0)
+			res, _, err = deserializeFuncs[BULKSTRINGS]([]byte(v.Data), 0)
 		case ERRORS:
-			res, _, err= deserializeFuncs[ERRORS]([]byte(v.Data),0)
+			res, _, err = deserializeFuncs[ERRORS]([]byte(v.Data), 0)
 		case ARRAYS:
-			res,_,err= deserializeFuncs[ARRAYS]([]byte(v.Data),0)
+			res, _, err = deserializeFuncs[ARRAYS]([]byte(v.Data), 0)
 		}
 
 		if res == nil {
-			res= &RespDataType{Value: nil, Type: v.Type}
+			res = &RespDataType{Value: nil, Type: v.Type}
 		}
 
 		if err != nil {

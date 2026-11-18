@@ -1,6 +1,6 @@
 package resp
 
-type RespDataType struct{
+type RespDataType struct {
 	Value interface{}
-	Type byte
+	Type  byte
 }

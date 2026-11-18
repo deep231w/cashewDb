@@ -1,5 +1,5 @@
 package cmdexec
 
-func Update(){
-	
+func Update() {
+
 }

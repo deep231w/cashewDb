@@ -17,21 +17,20 @@ import (
 	DEL name
 */
 
-
-func CommandParser(cmd *string) (*dto.Command,error){
-	cmdArr:= strings.Split(*cmd, " ")
+func CommandParser(cmd *string) (*dto.Command, error) {
+	cmdArr := strings.Split(*cmd, " ")
 
 	if len(cmdArr) > 3 {
-		return &dto.Command{},errors.New("Too many arguments !!")
+		return &dto.Command{}, errors.New("Too many arguments !!")
 	}
-	cmdArg:= cmdArr[0]
+	cmdArg := cmdArr[0]
 
 	var restArgs []string
-	for i:=1; i<len(cmdArr); i++{
-		restArgs=append(restArgs,cmdArr[i])
+	for i := 1; i < len(cmdArr); i++ {
+		restArgs = append(restArgs, cmdArr[i])
 	}
-	
-	structedArg:= &dto.Command{
+
+	structedArg := &dto.Command{
 		Name: cmdArg,
 		Args: restArgs,
 	}
